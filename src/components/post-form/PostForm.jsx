@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Button, Input, RTE, Select } from "..";
 import appwriteService from "../../appwrite/config";
@@ -18,7 +18,6 @@ export default function PostForm({ post }) {
     const navigate = useNavigate();
     const userData = useSelector((state) => state.auth.userData);
 
-    // Function to validate userId format
     const isValidUserId = (id) => {
         return (
             typeof id === "string" &&
@@ -75,7 +74,7 @@ export default function PostForm({ post }) {
         return "";
     }, []);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const subscription = watch((value, { name }) => {
             if (name === "title") {
                 setValue("slug", slugTransform(value.title), { shouldValidate: true });
@@ -86,50 +85,64 @@ export default function PostForm({ post }) {
     }, [watch, slugTransform, setValue]);
 
     return (
-        <form onSubmit={handleSubmit(submit)} className="flex flex-wrap">
-            <div className="w-2/3 px-2">
+        <form
+            onSubmit={handleSubmit(submit)}
+            className="flex flex-col lg:flex-row gap-6 p-6 bg-white rounded-xl shadow-lg"
+        >
+            {/* Left Section */}
+            <div className="flex-1 space-y-4">
                 <Input
-                    label="Title :"
-                    placeholder="Title"
-                    className="mb-4"
+                    label="Title"
+                    placeholder="Enter post title"
                     {...register("title", { required: true })}
                 />
                 <Input
-                    label="Slug :"
-                    placeholder="Slug"
-                    className="mb-4"
+                    label="Slug"
+                    placeholder="Auto-generated or edit manually"
                     {...register("slug", { required: true })}
-                    onInput={(e) => {
-                        setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true });
-                    }}
+                    onInput={(e) =>
+                        setValue("slug", slugTransform(e.currentTarget.value), { shouldValidate: true })
+                    }
                 />
-                <RTE label="Content :" name="content" control={control} defaultValue={getValues("content")} />
+                <RTE
+                    label="Content"
+                    name="content"
+                    control={control}
+                    defaultValue={getValues("content")}
+                />
             </div>
-            <div className="w-1/3 px-2">
+
+            {/* Right Section */}
+            <div className="w-full lg:w-1/3 space-y-4">
                 <Input
-                    label="Featured Image :"
+                    label="Featured Image"
                     type="file"
-                    className="mb-4"
                     accept="image/png, image/jpg, image/jpeg, image/gif"
                     {...register("image", { required: !post })}
                 />
+
                 {post && (
-                    <div className="w-full mb-4">
+                    <div className="w-full">
                         <img
                             src={appwriteService.getFileView(post.featuredImage)}
                             alt={post.title}
-                            className="rounded-lg"
+                            className="rounded-lg shadow-md"
                         />
                     </div>
                 )}
+
                 <Select
                     options={["active", "inactive"]}
                     label="Status"
-                    className="mb-4"
                     {...register("status", { required: true })}
                 />
-                <Button type="submit" bgColor={post ? "bg-green-500" : undefined} className="w-full">
-                    {post ? "Update" : "Submit"}
+
+                <Button
+                    type="submit"
+                    bgColor={post ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}
+                    className="w-full text-white transition-all duration-300"
+                >
+                    {post ? "Update Post" : "Create Post"}
                 </Button>
             </div>
         </form>
