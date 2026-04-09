@@ -8,7 +8,7 @@ function PostCard({ $id, title, featuredImage }) {
       <div className="w-full bg-white rounded-3xl p-3 border border-slate-100 shadow-sm hover:shadow-2xl transition-all duration-500">
         <div className="w-full mb-4 overflow-hidden rounded-2xl aspect-video relative">
           <img
-            src={appwriteService.getFilePreview(featuredImage)}
+            src={appwriteService.getFileView(featuredImage)}
             alt={title}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
           />
