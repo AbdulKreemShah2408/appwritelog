@@ -17,9 +17,14 @@ function Signup() {
     try {
       const userData = await authService.createAccount(data);
       if (userData) {
-        const userData = await authService.getCurrentUser();
-        if (userData) dispatch(login(userData));
-        navigate('/');
+        const session = await authService.login(data);
+        if (session) {
+          const currentUserData = await authService.getCurrentUser();
+          if (currentUserData) {
+            dispatch(login(currentUserData));
+            navigate('/');
+          }
+        }
       }
     } catch (error) {
       setError(error.message);
@@ -45,42 +50,38 @@ function Signup() {
         {error && <p className="text-red-600 mt-4 text-center text-sm">{error}</p>}
 
         <form onSubmit={handleSubmit(create)} className="mt-8 space-y-6">
-          <div>
+          <div className="space-y-5">
             <Input
               label="Full Name"
               placeholder="Enter your full name"
-              className="border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
               {...register('name', {
-                required: 'Full Name is required',
+                required: true,
               })}
             />
-          </div>
-          <div>
             <Input
               label="Email"
               placeholder="Enter your email"
               type="email"
-              className="border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
               {...register('email', {
-                required: 'Email is required',
-                validate: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) || 'Invalid email address',
+                required: true,
+                validate: {
+                  matchPatern: (value) => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value) || 
+                  "Email address must be a valid address",
+                }
               })}
             />
-          </div>
-          <div>
             <Input
               label="Password"
               type="password"
               placeholder="Enter your password"
-              className="border-2 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
               {...register('password', {
-                required: 'Password is required',
+                required: true,
               })}
             />
+            <Button type="submit" className="w-full">
+              Create Account
+            </Button>
           </div>
-          <Button type="submit" className="w-full transition duration-300 hover:bg-blue-700">
-            Create Account
-          </Button>
         </form>
       </div>
     </div>
