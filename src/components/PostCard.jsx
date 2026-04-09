@@ -19,4 +19,4 @@ function PostCard({ $id, title, featuredImage }) {
   )
 }
 
-export default PostCard ye code ha us ka us ko saii karo or comments add nhi karne ha 
+export default PostCard 
